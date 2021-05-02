@@ -1,0 +1,57 @@
+---
+- name: "BLOCKnRESCUE: ONTAP_INFO"
+  block:
+    - set_fact:
+        service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+    - name: "Gathering Infromation"
+      netapp.ontap.na_ontap_info:
+        hostname: "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+        username: "{{ clusters[loop_arg['hostname']]['username'] }}"
+        password: "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+        cert_filepath: "{{ loop_arg['cert_filepath']                | default(omit) }}"
+        feature_flags: "{{ loop_arg['feature_flags']                | default(omit) }}"
+        http_port: "{{ loop_arg['http_port']                    | default(omit) }}"
+        https: "{{ loop_arg['https']                        | default('true') }}"
+        key_filepath: "{{ loop_arg['key_filepath']                 | default(omit) }}"
+        ontapi: "{{ loop_arg['ontapi']                       | default(omit) }}"
+        use_rest: "{{ loop_arg['use_rest']                     | default(omit) }}"
+        validate_certs: "{{ loop_arg['validate_certs']               | default('false') }}"
+
+        vserver: "{{ loop_arg['vserver']                      | default(omit) }}"
+        query: "{{ loop_arg['query']                        | default(omit) }}"
+        continue_on_error: "{{ loop_arg['continue_on_error']            | default(omit) }}"
+        desired_attributes: "{{ loop_arg['desired_attributes']           | default(omit) }}"
+        gather_subset: "{{ loop_arg['gather_subset']                | default(omit) }}"
+        max_records: "{{ loop_arg['max_records']                  | default(omit) }}"
+        state: "{{ loop_arg['state']                        | default(omit) }}"
+        summary: "{{ loop_arg['summary']                      | default(omit) }}"
+        use_native_zapi_tags: "{{ loop_arg['use_native_zapi_tags']         | default(omit) }}"
+
+      loop: "{{ args }}"
+      loop_control:
+        loop_var: loop_arg
+      register: role_result
+
+    - name: "Show me the INFO"
+      debug:
+        msg: "{{ role_result.results[0].ontap_info }}"
+
+  rescue:
+    - name: Set Play Status
+      set_fact:
+        playbook_status: "failed"
+
+  always:
+    - name: add log msg
+      vars:
+        role_log:
+          role: "ONTAP_INFO"
+          timestamp:
+          start_time: "{{service_start_time}}"
+          end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+          service_status: "{{ playbook_status }}"
+          result: "{{role_result}}"
+      set_fact:
+        global_log_msgs: "{{ global_log_msgs + [ role_log ] }}"

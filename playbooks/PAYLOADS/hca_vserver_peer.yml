@@ -1,0 +1,20 @@
+#---
+# raw_service_request:  
+#   service: 'new_svm'
+#   operation: 'create'
+#   std_name:  'svm_create'
+#   req_details:
+#     ontap_vserver:                  
+#       - name: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         hostname: 'PZDCNLSHRC03'
+#         root_vol: 'PZDCNLSVMDES01_root'
+#         root_volume_aggregate:  'PZDCNLSHRC03A_VMDK_01'
+#         allowed_protocols:  'cifs,nfs'
+#         ipspace:  'Default'
+#     ontap_vserver_peer:
+#       - hostname: 'PZDCNLSHRC03'
+#         dest_hostname:  'XRDCNLSHRC02'
+#         peer_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'            # Peer has to be created prior ???
+#         peer_cluster: 'XRDCNLSHRC02'    # Need to confirm
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         applications: 'snapmirror'

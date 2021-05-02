@@ -1,0 +1,131 @@
+---
+
+#--------------------------------------------------------------------
+# Each service provisioned must have an entry in the 'services'
+# dictionary.  The service name is the key under 'services'
+# and will be used to determine the name of various roles to
+# be provisioned (e.g. aggrs). The service name must be provided in every
+# request sent to Tower
+#--------------------------------------------------------------------
+
+#####
+# HCA Playbooks
+#####
+pre_task:
+
+post_task:
+
+services:
+  new_svm:
+    create:
+      microservices:
+        - name: ontap_vserver
+          args: ontap_vserver
+          role: na/ontap_vserver
+        - name: root_vol_thin
+          args: root_vol_thin
+          role: na/root_vol_thin
+        - name: ontap_interface
+          args: ontap_interface
+          role: na/ontap_interface
+        - name: ontap_ls_volume       #1.21 Chanege name & args to ontap_ls_volume to allow for ontap_volume to be used in play wo/TYPE:DB being applied
+          args: ontap_ls_volume
+          role: na/ontap_volume
+        - name: ontap_snapmirror        # Netapp only initializes first LS mirror 
+          args: ontap_snapmirror
+          role: na/ontap_snapmirror
+        - name: snap_init_destination     # initialize the second LS mirror
+          args: snap_init_destination
+          role: na/snap_init_destination
+        - name: ontap_export_policy
+          args: ontap_export_policy
+          role: na/ontap_export_policy
+        - name: ontap_export_policy_rule
+          args: ontap_export_policy_rule
+          role: na/ontap_export_policy_rule
+        - name: ontap_volume_policy
+          args: ontap_volume_policy
+          role: na/ontap_volume
+        - name: ontap_net_routes
+          args: ontap_net_routes
+          role: na/ontap_net_routes
+        - name: ontap_dns
+          args: ontap_dns
+          role: na/ontap_dns
+        - name: ontap_cifs_server
+          args: ontap_cifs_server
+          role: na/ontap_cifs_server
+        - name: ls_mirror_update          # update the LS set 'snapmirror update-ls-set'
+          args: ls_mirror_update          # Moved to end of the play, allowing time for snap_init_destination to complete
+          role: na/ls_mirror_update       #  This should avoid putting a pause in the role and subsequent play.
+        - name: ontap_vserver_peer
+          args: ontap_vserver_peer
+          role: na/ontap_vserver_peer
+        
+
+
+    read:
+    update:
+    delete:
+
+  inode_expansion:
+    create:
+      microservices:
+        - name: inode_expansion
+          args: inode_expansion
+          role: na/inode_expansion  
+    read:
+    update:
+    delete:
+  
+  volume_resize:
+    create:
+      microservices:
+        - name: volume_resize
+          args: volume_resize
+          role: na/volume_resize 
+    read:
+    update:
+    delete: 
+  
+
+  cifs_nfs:
+    create:
+      microservices:
+        - name: ontap_export_policy
+          args: ontap_export_policy
+          role: na/ontap_export_policy
+        - name: ontap_volume
+          args: ontap_volume
+          role: na/ontap_volume
+        # - name: ontap_qtree
+        #   args: ontap_qtree
+        #   role: na/ontap_qtree
+        # - name: ontap_quotas
+        #   args: ontap_quotas
+        #   role: na/ontap_quotas
+        # - name: ontap_export_policy_rule
+        #   args: ontap_export_policy_rule
+        #   role: na/ontap_export_policy_rule
+        - name: ontap_cifs
+          args: ontap_cifs
+          role: na/ontap_cifs
+        - name: ontap_cifs_acl
+          args: ontap_cifs_acl
+          role: na/ontap_cifs_acl
+        - name: ontap_cifs_remove_everyone_acl
+          args: ontap_cifs_remove_everyone_acl
+          role: na/ontap_cifs_acl
+        - name: ontap_snapmirror
+          args: ontap_snapmirror
+          role: na/ontap_snapmirror
+
+  onbase_qa_shares:
+    create:
+      microservices:
+        - name: ontap_volume_clone
+          args: ontap_volume_clone
+          role: na/ontap_volume_clone
+        - name: ontap_cifs_acl
+          args: ontap_cifs_acl
+          role: na/ontap_cifs_acl

@@ -1,0 +1,15 @@
+---
+raw_service_request:
+  service: "get_info"
+  # service: 'cifs_nfs'
+  operation: "create"
+  std_name: "svm_create"
+  req_details:
+    ontap_info:
+      - hostname: Cluster03
+        gather_subset: vserver_info
+    aws_s3
+      - bucket: mybucket            <-- HCA STorageGrid
+        object: /my/desired/key.txt  <-- need to connect with info output file/dictionary
+        src: /usr/local/myfile.txt
+        mode: put

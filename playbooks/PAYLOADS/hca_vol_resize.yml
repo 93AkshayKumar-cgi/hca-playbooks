@@ -1,0 +1,12 @@
+---
+raw_service_request:  
+ service: 'volume_resize'
+ operation: 'create'
+ std_name:  'volume_resize'
+ req_details:
+   volume_resize:
+     - name: "vol01"
+       hostname: 'cluster1'
+       vserver: 'svm1'
+       volume: 'vol01'
+       size: 1

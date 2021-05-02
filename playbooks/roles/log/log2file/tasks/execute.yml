@@ -1,0 +1,39 @@
+---
+
+#####
+# Global Logger Role
+#####    
+- name: Logging playbook Block
+  set_fact: 
+    log_string: |
+                {{ log_string }}
+                <<------- Start of {{ global_log[idx].role }} Service --------->>           
+                {% if log_level == '1' and global_log[idx].service_status == 'success' %}
+                Service Name     : {{global_log[idx].role}} 
+                Service Staus    : {{global_log[idx].service_status}} 
+                Serive Timestamp : {{global_log[idx].timestamp }} 
+                {% if global_log[idx].result.msg is defined %}Serive Message   : {{global_log[idx].result.msg}} 
+                {%  endif %}  
+                {% elif log_level == '2' or global_log[idx].service_status == 'failed' %}
+                Service Name     : {{global_log[idx].role}}
+                Service Staus    : {{global_log[idx].service_status}}
+                Serive Timestamp : {{global_log[idx].timestamp }}
+                {% if global_log[idx].result.results is defined %}{% for loop_result in global_log[idx].result.results %}
+                {% if loop_result.failed is true and loop_result.msg is defined %}Error Message    : {{loop_result.msg}}
+                {% endif %}
+                {% endfor %}{% endif%}
+                Serive Result    : {{ global_log[idx].result | to_nice_yaml }}  
+                {% endif %}
+                <<------- End of {{ global_log[idx].role }} Service --------->>           
+  loop: "{{ global_log }}"
+  loop_control:
+    index_var: idx 
+
+- name: Logging playbook Block to File
+  blockinfile: 
+    state:  present
+    insertafter:  EOF
+    path: "{{ output_file }}" 
+    create: yes
+    marker: ""
+    content: "{{ log_string }}" 

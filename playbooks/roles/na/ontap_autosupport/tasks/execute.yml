@@ -1,0 +1,57 @@
+---
+
+-  name: "BLOCKnRESCUE: ONTAP_AUTOSUPPORT"
+   block:
+      -  set_fact:
+            service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+      -  name: 'Configure Autsupport'
+         netapp.ontap.na_ontap_autosupport:
+            hostname:                  "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:                  "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:                  "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+            cert_filepath:             "{{ loop_arg['cert_filepath']                | default(omit) }}"
+            feature_flags:             "{{ loop_arg['feature_flags']                | default(omit) }}"
+            http_port:                 "{{ loop_arg['http_port']                    | default(omit) }}"
+            https:                     "{{ loop_arg['https']                        | default('true') }}"
+            ontapi:                    "{{ loop_arg['ontapi']                       | default(omit) }}"
+            key_filepath:              "{{ loop_arg['key_filepath']                 | default(omit) }}"
+            use_rest:                  "{{ loop_arg['use_rest']                     | default(omit) }}"
+            validate_certs:            "{{ loop_arg['validate_certs']               | default('false') }}"
+
+            node_name:                 "{{ loop_arg['node_name'] }}"
+            from_address:              "{{ loop_arg['from_address']                 | default(omit) }}"
+            hostname_in_subject:       "{{ loop_arg['hostname_in_subject']          | default(omit) }}"
+            state:                     "{{ loop_arg['state']                        | default('present') }}"
+            mail_hosts:                "{{ loop_arg['mail_hosts']                   | default(omit) }}"
+            noteto:                    "{{ loop_arg['noteto']                       | default(omit) }}"
+            partner_address:           "{{ loop_arg['partner_address']              | default(omit) }}"
+            post_url:                  "{{ loop_arg['post_url']                     | default(omit) }}"
+            proxy_url:                 "{{ loop_arg['proxy_url']                    | default(omit) }}"
+            support:                   "{{ loop_arg['support']                      | default(omit) }}"
+            to_address:                "{{ loop_arg['to_address']                   | default(omit) }}"
+            transport:                 "{{ loop_arg['transport']                    | default(omit) }}"
+            
+         loop:    "{{ args }}"
+         loop_control:
+            loop_var:      loop_arg
+         register:   role_result
+
+   rescue:
+      -  name: Set Play Status
+         set_fact:
+            playbook_status:   "failed"
+
+   always:
+      -  name: add log msg
+         vars:
+            role_log:
+               role: "ONTAP_AUTOSUPPORT"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "{{ playbook_status }}"
+               result: "{{role_result}}"   
+         set_fact:
+            global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"

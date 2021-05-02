@@ -1,0 +1,58 @@
+---
+
+-  name: "BLOCKnRESCUE: ONTAP_QTREE"
+   block:
+      -  set_fact:
+            service_start_time: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+      -  name: "execute ontap_qtree provision"   
+         netapp.ontap.na_ontap_qtree:
+            hostname:             "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:             "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:             "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+            cert_filepath:        "{{ loop_arg['cert_filepath']                | default(omit) }}"
+            feature_flags:        "{{ loop_arg['feature_flags']                | default(omit) }}"
+            http_port:            "{{ loop_arg['http_port']                    | default(omit) }}"
+            https:                "{{ loop_arg['https']                        | default('true') }}"
+            key_filepath:         "{{ loop_arg['key_filepath']                 | default(omit) }}"
+            ontapi:               "{{ loop_arg['ontapi']                       | default(omit) }}"
+            use_rest:             "{{ loop_arg['use_rest']                     | default(omit) }}"
+            validate_certs:       "{{ loop_arg['validate_certs']               | default('false') }}"
+
+            vserver:              "{{ loop_arg['vserver'] }}"
+            name:                 "{{ loop_arg['name'] }}"
+            flexvol_name:         "{{ loop_arg['flexvol_name']                 | default(omit) }}"  #Required when State=present!!  
+            force_delete:         "{{ loop_arg['force_delete']                 | default(omit) }}"
+            state:                "{{ loop_arg['state']                        | default('present') }}"
+            time_out:             "{{ loop_arg['time_out']                     | default(omit) }}"
+            export_policy:        "{{ loop_arg['export_policy']                | default(omit) }}"
+            from_name:            "{{ loop_arg['from_name']                    | default(omit) }}"
+            oplocks:              "{{ loop_arg['oplocks']                      | default(omit) }}"
+            security_style:       "{{ loop_arg['security_style']               | default(omit) }}"
+            unix_permissions:     "{{ loop_arg['unix_permissions']             | default(omit) }}"
+            wait_for_completion:  "{{ loop_arg['wait_for_completion']          | default(omit) }}"
+          
+         loop:    "{{ args }}"
+         loop_control:
+            loop_var:   loop_arg
+         register:      role_result
+
+   rescue:
+      -  name: Set Play Status
+         set_fact:
+            playbook_status:   "failed"
+
+   always:
+      -  name: add log msg
+         vars:
+            role_log:
+               role: "ONTAP_QTREEE"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "{{ playbook_status }}"
+               result: "{{role_result}}"   
+         set_fact:
+            global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}" 
+        

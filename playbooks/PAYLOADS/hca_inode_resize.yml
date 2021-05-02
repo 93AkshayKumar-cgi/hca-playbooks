@@ -1,0 +1,12 @@
+---
+#raw_service_request:  
+#  service: 'inode_expansion'
+#  operation: 'create'
+#  std_name:  'nas_standard'
+#  req_details:
+#    inode_expansion:
+#      - hostname: 'XRDCNLSHRC02'
+#        vserver:  PZDCNLSVMSRC01.hcaqol.corpqol.net
+#        volume: V_Ansible_Test
+#        files_used: 31122
+#        files_total:  32000

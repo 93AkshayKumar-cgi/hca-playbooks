@@ -1,0 +1,14 @@
+---
+
+#################
+# VARS file for Mailer Subsystem
+##################
+
+
+# host: smtp.gmail.com
+# port: 465
+# username: 
+# password: 
+# to: S
+# subject:  "Ansible Playbook Results"
+# body: "Attached is the output of your Ansible play"

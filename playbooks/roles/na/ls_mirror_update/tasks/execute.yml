@@ -1,0 +1,70 @@
+---
+
+#####################################################################
+#   Role to initialize the second mirror of the load_sharing mirrors
+#   created in new_svm service
+#   Ontap module does not initialize at creation as of Ansible 2.9
+#####################################################################
+- set_fact:
+      service_start_time: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+- name: "BLOCKnRESCUE: LS_MIRROR_UPDATE"
+  block:  
+
+      # - name: "Pause to for snappmirror 1 initialize"
+      #   wait_for:
+      #     timeout:  20
+          
+      - name: "SNAPMIRROR UPDATE LS-SET"
+          
+        na_ontap_command:
+          hostname: "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+          username: "{{ clusters[loop_arg['hostname']]['username'] }}"
+          password: "{{ clusters[loop_arg['hostname']]['password'] }}"
+          https:            true  #<-- move to standards
+          validate_certs:   false  #<-- move to standards
+          command:
+            - "snapmirror"
+            - "update-ls-set"
+            - "-source-path"
+            - "{{ loop_arg['hostname'] + '://' + loop_arg['source_vserver'] + '/'  + loop_arg['source_volume'] }}"
+            
+        loop: "{{ args }}"
+        loop_control:
+          loop_var: loop_arg
+        register: role_result
+    
+      - debug:
+          var: role_result
+  
+  rescue:
+      - name: 'Global playbook logging'
+        include_role: 
+            name: "log/global_logr"       
+
+        vars:
+            role_log:
+              role: "LS_MIRROR_UPDATE"
+              timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+              service_status: "failed"
+              result: "{{role_result}}"  
+            global_log:  "{{ global_log_msgs + [ role_log ] }}"
+
+      - name: "STop the Play"
+        meta: end_play   
+
+-  name: add log msg
+   vars:
+      role_log:
+         role: "LS_MIRROR_UPDATE"
+         timestamp:
+            start_time: "{{service_start_time}}"
+            end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+         service_status: "success"
+         result: "{{role_result}}"   
+   set_fact:
+      global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"
+
+      

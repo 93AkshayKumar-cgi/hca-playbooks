@@ -1,0 +1,66 @@
+---
+
+-  set_fact:
+      #service_start_time: "{{ ansible_date_time.epoch }}"
+      service_start_time: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+-  name: 'provision export policy'
+   netapp.ontap.na_ontap_export_policy:
+      hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+      username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+      password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+      https:            true
+      validate_certs:   false
+
+      vserver:          "{{ loop_policy.vserver }}"
+      name:             "{{ loop_policy.name }}"
+   loop:    "{{ args['policies'] }}"
+   loop_control:
+      loop_var:   loop_policy
+
+-  name: 'provision export rules'
+   netapp.ontap.a_ontap_export_policy_rule:
+      hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+      username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+      password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+      https:            true
+      validate_certs:   false
+
+      vserver:                "{{ loop_rule.vserver }}"
+      client_match:           "{{ loop_rule.client_match          | join(',') }}"
+      protocol:               "{{ loop_rule.protocol              | join(',')}}"
+      ro_rule:                "{{ loop_rule.ro_rule               | join(',')}}"
+      rw_rule:                "{{ loop_rule.rw_rule               | join(',')}}"
+      super_user_security:    "{{ loop_rule.super_user_security   | join(',')}}"
+      policy_name:            "{{ loop_rule.policy_name }}"
+   loop:    "{{ args.rules }}"
+   loop_control:
+      loop_var:      loop_rule
+
+-  name: 'apply policy to volume'
+   netapp.ontap.na_ontap_volume:
+      hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+      username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+      password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+      https:            true
+      validate_certs:   false
+
+      vserver:                "{{ loop_vol.vserver }}"
+      name:                   "{{ loop_vol.vol_name }}"
+      policy:                 "{{ loop_vol.policy_name }}"
+   loop:    "{{ args['volumes'] }}"
+   loop_control:
+      loop_var:      loop_vol
+
+-  set_fact:
+      #start_time: "{{ ansible_date_time.epoch }}"
+      service_end_time: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+
+# -  name: add log msg
+#    set_fact:
+#       global_log_msgs: "{{ global_log_msgs | combine( { 'ONTAP': role_result.results | combine( { 'start_time': service_start_time , 'end_time': service_end_time } ) } ) }}"
+#       #global_log_msgs:  "{{ ( { 'ONTAP': role_result.results | combine( { 'start_time': service_start_time , 'end_time': service_end_time } ) } ) | combine( global_log_msgs ) }}"
+#       mservice: "ONTAP_VOLUME"
+#       micro_start_time: "{{ service_start_time }}"
+#       micro_end_time:  "{{ service_end_time }}"

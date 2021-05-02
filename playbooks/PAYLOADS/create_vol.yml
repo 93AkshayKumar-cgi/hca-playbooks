@@ -1,0 +1,21 @@
+---
+raw_service_request:
+    service: 'cifs_nfs'               #make it generic
+    operation: 'create'
+    std_name:  'nas_standard'
+    req_details:
+        ontap_volume:
+            -   name:                      'vol01'            # Mandatory
+                hostname:                  'cluster1'         # Mandatory
+                vserver:                   'svm1'             # Mandatory
+                aggregate_name:            'aggr1_n1'         # Mandatory
+                size:                      '1'                # Mandatory
+                space_guarantee:           'volume'
+                junction_path:             '/vol01'
+                size_unit:                 'gb'                              
+                snapshot_policy:           'default'
+                percent_snapshot_space:    5
+                volume_security_style:     'unix'
+                unix_permissions:          '775'
+                efficiency_policy:         'default'
+                space_guarantee:           'none'

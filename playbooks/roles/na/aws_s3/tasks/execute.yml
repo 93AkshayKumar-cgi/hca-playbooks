@@ -1,0 +1,44 @@
+---
+# Install boto3, boto, botocore and amazon aws collections
+- name: "BLOCKnRESCUE: AWS_S3"
+  block:
+    - set_fact:
+        service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+    - name: "Gathering Infromation"
+      aws_s3:
+        aws_access_key: ""
+        aws_secret_key: ""
+        bucket: 
+        object: 
+        src: 
+        mode: put
+        # s3_url: "arn:aws:s3:us-east-1:238121594142:accesspoint/ansitlbetest50data"
+        validate_certs: no
+
+      loop: "{{ args }}"
+      loop_control:
+        loop_var: loop_arg
+      register: role_result
+
+    - name: "Show me the info"
+      debug:
+        msg: "{{ role_result }}"
+
+  rescue:
+    - name: Set Play Status
+      set_fact:
+        playbook_status: "failed"
+
+  always:
+    - name: add log msg
+      vars:
+        role_log:
+          role: "AWS_S3"
+          timestamp:
+            start_time: "{{service_start_time}}"
+            end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+          service_status: "{{ playbook_status }}"
+          result: "{{role_result}}"
+      set_fact:
+        global_log_msgs: "{{ global_log_msgs + [ role_log ] }}"

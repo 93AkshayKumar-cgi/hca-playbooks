@@ -1,0 +1,47 @@
+# ---
+# raw_service_request:  
+#   service: 'new_svm'
+#   operation: 'create'
+#   std_name:  'svm_create'
+#   req_details:
+#     ontap_vserver:                  
+#       - name: 'YYY'
+#         hostname: 'Cluster01'
+#         root_vol: 'YYY_root'
+#         root_volume_aggregate:  'aggr1'
+#         allowed_protocols:  'cifs,nfs'
+#         ipspace:  'Default'
+#     ontap_ls_volume:                           #LS Mirror Vols
+#       - name: 'YYY_root_M01'
+#         hostname: 'Cluster01'
+#         vserver:  'YYY'
+#         aggregate_name: 'aggr1'
+#         size:   '1024'
+#       - name: 'YYY_root_M02'
+#         hostname: 'Cluster01'
+#         vserver:  'YYY'
+#         aggregate_name: 'aggr2'
+#         size:   '1024'
+#     ontap_snapmirror:                   
+#       - hostname: 'Cluster01'                #Create First LS Mirror
+#         source_volume:  'YYY_root'
+#         destination_volume: 'YYY_root_M01'
+#         source_vserver: 'YYY'
+#         destination_vserver:  'YYY'
+#         schedule: 'hourly'
+#         relationship_type:  'load_sharing'
+#       - hostname: 'Cluster01'                 #Create Second LS Mirror
+#         source_volume:  'YYY_root'
+#         destination_volume: 'YYY_root_M02'
+#         source_vserver: 'YYY'
+#         destination_vserver:  'YYY'
+#         schedule: 'hourly'
+#         relationship_type:  'load_sharing'
+#     snap_init_destination:
+#       - hostname: 'Cluster01'
+#         destination_vserver: 'YYY'
+#         destination_volume: 'YYY_root_M02'
+#     ls_mirror_update:
+#       - hostname: 'Cluster01'
+#         source_vserver: 'YYY'
+#         source_volume: 'YYY_root'

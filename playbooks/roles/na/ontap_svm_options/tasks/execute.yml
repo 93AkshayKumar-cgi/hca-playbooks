@@ -1,0 +1,59 @@
+---
+
+-  set_fact:
+      service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+-  name: "BLOCKnRESCUE: ONTAP_SVM_OPTIONS"
+   block:
+
+
+      -  name: 'Configure ONTAP_SVM_OPTIONS'
+      
+         na_ontap_svm_options:
+            hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+            https:            true
+            validate_certs:   false
+            vserver:                            "{{ loop_arg['vserver'] }}"
+            
+            http_port:              "{{ loop_arg['http_port']            | default(omit) }}"
+            state:                  "{{ loop_arg['state']                | default('present') }}"
+            ontapi:			         "{{ loop_arg['ontapi']				    | default(omit) }}"
+            use_rest:		      	"{{ loop_arg['use_rest']				 | default(omit) }}"
+            value:                  "{{ loop_arg['value']                | default(omit)}}"
+
+         loop:    "{{ args }}"
+         loop_control:
+            loop_var:      loop_arg
+         register:   role_result
+
+   rescue:
+      -  name: 'Global playbook logging'
+         include_role: 
+            name: "log/global_logr"       
+         vars:
+            role_log:
+               role: "ONTAP_SVM_OPTIONS"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "failed"
+               result: "{{role_result}}"   
+            global_log:  "{{ global_log_msgs + [ role_log ] }}"
+
+      -  name: "STop the Play"
+         meta: end_play      
+        
+-  name: add log msg
+   vars:
+      role_log:
+         role: "ONTAP_SVM_OPTIONS"
+         timestamp:
+            start_time: "{{service_start_time}}"
+            end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+         service_status: "success"
+         result: "{{role_result}}"   
+   set_fact:
+      global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"

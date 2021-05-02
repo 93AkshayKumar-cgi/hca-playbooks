@@ -1,0 +1,80 @@
+---
+
+#-------------------------------------------------------------------------------
+# This yaml file defines the environmental standards for any requested provision.
+# It is grouped by service definition. Each service definition has defined its own 
+# microservice and contained within is the operation with standard keys and values. 
+# Template:
+# standards:   <-- name of standard dictionary
+#   service_standard:
+#     microservice:
+#       CRUD_value:
+#         Key:  "value"
+#-------------------------------------------------------------------------------
+
+standards:
+  svm_create:
+    ontap_vserver:
+      create:
+        allowed_protocols:  'cifs,nfs'
+        root_volume_security_style: 'unix'
+        language: 'C.UTF-8'
+        snapshot_policy: 'HCA_ROOT_VOL'
+    ontap_vserver_peer:
+      create:
+        use_rest:     'Auto'
+    ontap_interface:
+      create:
+        state:  'present'
+    ontap_ls_volume:              #1.21 Changed to ontap_ls_volume  ontap_volume to be used in play wo/TYPE:DB being applied
+      create:
+        policy:                      'default'
+        type:                        'DP'
+        space_guarantee:             'none'
+        size_unit:                   'mb'
+    ontap_export_policy_rule:
+      create:
+        ro_rule:                    'sys'
+        rw_rule:                    'never'
+        protocol:                   'nfs'
+        super-user-security:        'none'
+    ontap_snapmirror:
+      create:
+        schedule:           'hourly'
+        relationship_type:  'load_sharing'
+ 
+
+  cifs_nfs:
+    ontap_volume:
+      create:
+        policy:                      'default'
+        type:                        'RW'
+        space_guarantee:             'none'
+        qos_adaptive_policy_group:   'performance'
+        percent_snapshot_space:      '5'
+    ontap_cifs:
+      create:
+        use_rest:                    'Auto'
+    ontap_cifs_acl:
+      create:
+        use_rest:                    'Auto'
+    ontap_qtree:
+      create:
+        type:                        'tree'
+        policy_name:                 'default'
+        security_style:              'unix'
+    ontap_quotas:
+      create:
+        policy:                 'default'
+        type:                   'tree'
+    ontap_vserver_peer:
+      create:
+        use_rest:     'Auto'
+
+  volume_resize:
+    create:
+    read:
+    update:
+    delete:
+
+  

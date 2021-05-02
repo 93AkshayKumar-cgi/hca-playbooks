@@ -1,0 +1,66 @@
+---
+
+#-------------------------------------------------------------------------------
+# This yaml file defines the environmental defaults for any requested provision.
+# It is grouped by service definition. Each service definition has defined its own 
+# microservice and contained within is the operation with default keys and values. 
+# Template:
+# defaults:   <-- name of standard dictionary
+#   service_standard:
+#     microservice:
+#       CRUD_value:
+#         Key:  "value"
+#-------------------------------------------------------------------------------
+
+defaults:
+  svm_create:
+    ontap_vserver:
+      create:
+        allowed_protocols:  'cifs,nfs'
+        root_volume_security_style: 'mixed'
+    ontap_vserver_peer:
+      create:
+        state:  'present'
+    ontap_interface:
+      create:
+        state:  'present'
+    if2ifgrp:
+      create: 
+        state:  'present'
+    ontap_volume:
+      create:
+        snapshot_policy:            'HCA_ROOT_VOL'      # Has to be none for type: DB
+        #percent_snapshot_space:     '0'
+        # volume_security_style:      'unix'
+        # unix_permissions:           '775'     # Can't apply perms to protected vol
+        efficiency_policy:          'default'
+        space_guarantee:            'none'
+        size_unit:                  'gb'
+    ontap_snapmirror:
+        create:
+          state:  'present'
+
+  cifs_nfs:
+    ontap_volume:
+      create:
+        snapshot_policy:            'default'
+        percent_snapshot_space:     5
+        volume_security_style:      'unix'
+        unix_permissions:           '775'
+        efficiency_policy:          'default'
+        space_guarantee:            'none'
+        size_unit:                  'gb'
+    ontap_quotas:
+      create:
+        set_quota_status: 'yes'
+        state:    'present'
+    ontap_volume_autosize:
+      create:
+        use_rest: 'never'
+  
+  inode_expansion:
+    ontap_command:
+      create:
+
+
+  

@@ -1,0 +1,8 @@
+---
+site_req_id:   'HCA'
+output_folder:  '/tmp'
+output_file:  "{{ output_folder }}/{{ site_req_id }}.out"       
+global_log_msgs:     []
+role_status: "success" 
+log_level:  "1"   #info
+#log_level:  "2"   #Verbose

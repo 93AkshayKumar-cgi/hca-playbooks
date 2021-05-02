@@ -1,0 +1,5 @@
+---
+# vars file for ontap_quotas
+
+# Set an empty vol list which will be used in tassk/execute.yml
+vol_data: []

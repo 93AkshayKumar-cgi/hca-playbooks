@@ -1,0 +1,38 @@
+# ---
+# raw_service_request:  
+#   service: 'new_svm'
+#   operation: 'create'
+#   std_name:  'svm_create'
+#   req_details:
+#     ontap_net_routes:
+#       - name: 'svm2'
+#         hostname: 'Cluster01'
+#         vserver:  'svm2'
+#         destination:  '0.0.0.0/0'
+#         gateway:  '192.168.253.2'
+#         metric: '30'
+#       - name: 'svm2'
+#         hostname: 'Cluster01'
+#         vserver:  'svm2'
+#         destination:  '0.0.0.0/0'
+#         gateway:  '192.168.253.2'
+#         metric: '20'
+#     ontap_dns:
+#       - vserver:  'svm2'
+#         domains:  'homelab.net'
+#         nameservers:  '192.168.253.130'
+#     ontap_cifs_server:
+#       - hostname: 'Cluster01'
+#         vserver:  'svm2'
+#         name:   'svm2'    #<--CIFS Server Name
+#         domain: 'homelab.net'
+#         ou:   '$OU'     #<-- OU required
+#         # admin_user_name:  '$OU'  <-- not sure if these are need for OU login
+#         # admin_password:   '$PW'
+#       - hostname: 'Cluster01'
+#         vserver:  'svm2'
+#         name:   'svm2'    #<--CIFS Server Name
+#         domain: 'homelab.net'
+#         ou:   '$OU'     #<-- OU required
+#         # admin_user_name:  '$OU'  <-- not sure if these are need for OU login
+#         # admin_password:   '$PW'

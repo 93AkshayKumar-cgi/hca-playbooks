@@ -1,0 +1,61 @@
+---
+
+
+
+-  name: "BLOCKnRESCUE: ONTAP_USER"
+   block:
+      -  set_fact:
+            service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+      -  name: 'Execute ONTAP_USER'
+         netapp.ontap.na_ontap_user:
+            hostname:                "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:                "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:                "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+            cert_filepath:           "{{ loop_arg['cert_filepath']                | default(omit) }}"
+            feature_flags:           "{{ loop_arg['feature_flags']                | default(omit) }}"
+            http_port:               "{{ loop_arg['http_port']                    | default(omit) }}"
+            https:                   "{{ loop_arg['https']                        | default('true') }}"
+            key_filepath:            "{{ loop_arg['key_filepath']                 | default(omit) }}"
+            ontapi:                  "{{ loop_arg['ontapi']                       | default(omit) }}"
+            use_rest:                "{{ loop_arg['use_rest']                     | default(omit) }}"
+            validate_certs:          "{{ loop_arg['validate_certs']               | default('false') }}"
+
+            name:                    "{{ loop_arg['name'] }}"
+            applications:            "{{ loop_arg['applications'] }}"
+            authentication_method:   "{{ loop_arg['authentication_method'] }}"
+            authentication_password: "{{ loop_arg['authentication_password']      | default(omit) }}"
+            authentication_protocol: "{{ loop_arg['authentication_protocol']      | default(omit) }}"
+            vserver:                 "{{ loop_arg['vserver'] }}"
+            engine_id:               "{{ loop_arg['engine_id']                    | default(omit) }}"
+            role_name:               "{{ loop_arg['role_name']                    | default(omit) }}"
+            set_password:            "{{ loop_arg['set_password']                 | default(omit) }}"
+            lock_user:               "{{ loop_arg['lock_user']                    | default(omit) }}"
+            state:                   "{{ loop_arg['state']                        | default('present') }}"
+            privacy_password:        "{{ loop_arg['privacy_password']             | default(omit) }}" 
+            privacy_protocol:        "{{ loop_arg['privacy_protocol']             | default(omit) }}"
+            remote_switch_ipaddress: "{{ loop_arg['remote_switch_ipaddress']      | default(omit) }}" 
+            
+         loop:    "{{ args }}"
+         loop_control:
+            loop_var:      loop_arg
+         register:   role_result
+
+   rescue:
+      -  name: Set Play Status
+         set_fact:
+            playbook_status:   "failed"
+
+   always:
+      -  name: add log msg
+         vars:
+            role_log:
+               role: "ONTAP_USER"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "{{ playbook_status }}"
+               result: "{{role_result}}"   
+         set_fact:
+            global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"

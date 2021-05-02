@@ -1,0 +1,8 @@
+---
+
+-  name: 'show args'
+   debug:
+      msg:  "{{ loop_arg }}"
+   loop:    "{{ args }}"
+   loop_control:
+      loop_var:   loop_arg

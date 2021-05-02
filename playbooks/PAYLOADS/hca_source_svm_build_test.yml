@@ -1,0 +1,155 @@
+#---
+#raw_service_request:  
+# service: 'new_svm'
+# operation: 'create'
+# std_name:  'svm_create'
+# req_details:
+#   ontap_vserver:                  
+#     - name: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+#       hostname: 'XRDCNLSHRC02'
+#       root_vol: 'PZDCNLSVMSRC01_root'
+#       root_volume_aggregate:  'AC01B_SATA_01'
+#       allowed_protocols:  'cifs,nfs'
+#       ipspace:  'Default'
+   #ontap_vserver_peer:
+   #  - hostname: 'XRDCNLSHRC02'
+   #    dest_hostname:  '10.28.184.14'
+   #    peer_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'            # Peer has to be created prior ???
+   #    peer_cluster: '10.242.1.10'    # Need to confirm
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    applications: 'snapmirror'
+   #ontap_interface:                    # 5 2xnfs, 2xcif, 1-mgmt Interfaces per net new Vserver
+   #  - interface_name: "PZDCNLSVMSRC01_MGMT"     #<-- #1 MGMT 
+   #    hostname:   'XRDCNLSHRC02'         
+   #    role:     'data'             
+   #    protocols:  'nfs'
+   #    admin_status: 'up'
+   #    address:  '10.242.1.21'  
+   #    netmask:  "255.255.255.192"   # HCA uses netmask-length of 24 for nfs & mgmt in their cli, module only takes netmask!
+   #    failover_group: 'DATA'   
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    home_node: 'XRDCNLSHRC02A'
+   #    home_port:  'a0a-2500'
+   #    firewall_policy:  'mgmt'
+   #  - interface_name: "PZDCNLSVMSRC01_nfs_01"  # <- #2 NFS LIF1- 
+   #    hostname:   'XRDCNLSHRC02'         
+   #    role:     'data'
+   #    protocols:  'nfs'
+   #    admin_status: 'up'
+   #    address:  '10.242.1.22'
+   #    netmask:  '255.255.255.192'    
+   #    failover_group: 'DATA'   #<-- BD/IFGRP string
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    home_node: 'XRDCNLSHRC02B'
+   #    home_port:  'a0a-2500'            
+   #  - interface_name: 'PZDCNLSVMSRC01_nfs_02'   #<-- NFS LIF2
+   #    hostname:   'XRDCNLSHRC02'         
+   #    role:     'data'
+   #    protocols:  'nfs'
+   #    admin_status: 'up'
+   #    address:  '10.242.1.23'
+   #    netmask:  '255.255.255.192'   
+   #    failover_group: 'DATA'   
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    home_node: 'XRDCNLSHRC02B'
+   #    home_port:  'a0a-2500'                   
+   #  - interface_name: "PZDCNLSVMSRC01_cifs_01"  # <--  CIFS LIF1
+   #    hostname:   'XRDCNLSHRC02'
+   #    role:     'data'
+   #    protocols:  'cifs'
+   #    admin_status: 'up'
+   #    address:  '10.242.1.24'
+   #    netmask:  '255.255.255.192'       ## HCA uses netmask-length of 25 for cifs in their cli, module only takes netmask!
+   #    failover_group: 'DATA'   
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    home_node:  'XRDCNLSHRC02B'
+   #    home_port:  'a0a-2500'            
+   #  - interface_name: 'PZDCNLSVMSRC01_cifs_02'   #<-- CIFS LIF2
+   #    hostname:   'XRDCNLSHRC02'
+   #    role:     'data'
+   #    protocols:  'cifs'
+   #    admin_status: 'up'
+   #    address:  '10.242.1.25'
+   #    netmask:  '255.255.255.192'
+   #    failover_group: 'DATA'   
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    home_node:  'XRDCNLSHRC02B'
+   #    home_port:  'a0a-2500'                
+   #ontap_ls_volume:                           #LS Mirror Vols
+   #  - name: 'PZDCNLSVMSRC01_root_M01'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    aggregate_name: 'AC01B_SATA_01'
+   #    size:   '1024'
+   #  - name: 'PZDCNLSVMSRC01_root_M02'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    aggregate_name: 'AC01B_SATA_01'
+   #    size:   '1024'
+   #ontap_snapmirror:                   
+   #  - hostname: 'XRDCNLSHRC02'                #Create First LS Mirror
+   #    source_volume:  'PZDCNLSVMSRC01_root'
+   #    destination_volume: 'PZDCNLSVMSRC01_root_M01'
+   #    source_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    destination_vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    schedule: 'hourly'
+   #    relationship_type:  'load_sharing'
+   #  - hostname: 'XRDCNLSHRC02'                 #Create Second LS Mirror
+   #    source_volume:  'PZDCNLSVMSRC01_root'
+   #    destination_volume: 'PZDCNLSVMSRC01_root_M02'
+   #    source_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    destination_vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    schedule: 'hourly'
+   #    relationship_type:  'load_sharing'
+   #ontap_export_policy:
+   #  - name: 'NFS_RO'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #ontap_export_policy_rule:
+   #  - name: 'NFS_RO'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    super_user_security: 'any'
+   #    client_match: '0.0.0.0/0'
+   #ontap_volume_policy:
+   #  - name: 'PZDCNLSVMSRC01_root'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    policy: 'NFS_RO'
+   #snap_init_destination:
+   #  - hostname: 'XRDCNLSHRC02'
+   #    destination_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    destination_volume: 'PZDCNLSVMSRC01_root_M02'
+   #ls_mirror_update:
+   #  - hostname: 'XRDCNLSHRC02'
+   #    source_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    source_volume: 'PZDCNLSVMSRC01_root'
+   #ontap_net_routes:
+   #  - name: 'PZDCNLSVMSRC01_MGMT'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    destination:  '0.0.0.0/0'
+   #    gateway:  '10.242.1.12'
+   #    metric: '30'
+   #  - name: 'PZDCNLSVMSRC01_DATA'
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    destination:  '0.0.0.0/0'
+   #    gateway:  '10.242.1.1'
+   #    metric: '20'
+   #ontap_dns:
+   #  - name: DNS Servers 
+   #    hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    domains:  'hcaqol.corpqol.net'
+   #    nameservers:  '10.28.4.13,10.28.4.14'
+   #ontap_cifs_server:
+   #  - hostname: 'XRDCNLSHRC02'
+   #    vserver:  'PZDCNLSVMSRC01.hcaqol.corpqol.net'
+   #    name:   'PZDCNLSVMSRC01'    #<--CIFS Server Name
+   #    domain: 'hcaqol.corpqol.net'
+   #    service_state: started
+   #    force: true
+   #    ou:   'OU=NetApp,OU=s00958,OU=00958,DC=HCAQOL,DC=CORPQOL,DC=NET'     #<-- OU required
+   #    admin_user_name:  'lmi8490' # <-- not sure if these are need for OU login
+   #    admin_password:   'ArkAries27'

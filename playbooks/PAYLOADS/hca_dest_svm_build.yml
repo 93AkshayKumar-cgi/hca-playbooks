@@ -1,0 +1,126 @@
+#---
+# raw_service_request:  
+#   service: 'new_svm'
+#   operation: 'create'
+#   std_name:  'svm_create'
+#   req_details:
+#     ontap_vserver:                  
+#       - name: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         hostname: 'PZDCNLSHRC03'
+#         root_vol: 'PZDCNLSVMDES01_root'
+#         root_volume_aggregate:  'PZDCNLSHRC03A_VMDK_01'
+#         allowed_protocols:  'cifs,nfs'
+#         ipspace:  'Default'
+#     ontap_vserver_peer:
+#       - hostname: 'PZDCNLSHRC03'
+#         dest_hostname:  'XRDCNLSHRC02'
+#         peer_vserver: 'PZDCNLSVMSRC01.hcaqol.corpqol.net'            # Peer has to be created prior ???
+#         peer_cluster: 'XRDCNLSHRC02'    # Need to confirm
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         applications: 'snapmirror'
+#     ontap_interface:                    # 5 2xnfs, 2xcif, 1-mgmt Interfaces per net new Vserver
+#       - interface_name: "PZDCNLSVMDES01_MGMT"     #<-- #1 MGMT 
+#         hostname:   'PZDCNLSHRC03'         
+#         role:     'data'             
+#         protocols:  'nfs'
+#         admin_status: 'up'
+#         address:  '10.242.1.26'  
+#         netmask:  "255.255.255.192"   # HCA uses netmask-length of 24 for nfs & mgmt in their cli, module only takes netmask!
+#         failover_group: 'Default'   
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         home_node: 'PZDCNLSHRC03A'
+#         home_port:  'e0b'
+#         firewall_policy:  'mgmt'
+#       - interface_name: "PZDCNLSVMDES01_nfs_01"  # <- #2 NFS LIF1- 
+#         hostname:   'PZDCNLSHRC03'         
+#         role:     'data'
+#         protocols:  'nfs'
+#         admin_status: 'up'
+#         address:  '10.242.1.27'
+#         netmask:  '255.255.255.192'    
+#         failover_group: 'Default'   #<-- BD/IFGRP string
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         home_node: 'PZDCNLSHRC03B'
+#         home_port:  'e0b'            
+#       - interface_name: 'PZDCNLSVMDES01_nfs_02'   #<-- NFS LIF2
+#         hostname:   'PZDCNLSHRC03'         
+#         role:     'data'
+#         protocols:  'nfs'
+#         admin_status: 'up'
+#         address:  '10.242.1.28'
+#         netmask:  '255.255.255.192'   
+#         failover_group: 'Default'   
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         home_node: 'PZDCNLSHRC03A'
+#         home_port:  'e0b'                   
+#       - interface_name: "PZDCNLSVMDES01_cifs_01"  # <--  CIFS LIF1
+#         hostname:   'PZDCNLSHRC03'
+#         role:     'data'
+#         protocols:  'cifs'
+#         admin_status: 'up'
+#         address:  '10.242.1.29'
+#         netmask:  '255.255.255.192'       ## HCA uses netmask-length of 25 for cifs in their cli, module only takes netmask!
+#         failover_group: 'Default'   
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         home_node:  'PZDCNLSHRC03B'
+#         home_port:  'e0b'            
+#       - interface_name: 'PZDCNLSVMDES01_cifs_02'   #<-- CIFS LIF2
+#         hostname:   'PZDCNLSHRC03'
+#         role:     'data'
+#         protocols:  'cifs'
+#         admin_status: 'up'
+#         address:  '10.242.1.30'
+#         netmask:  '255.255.255.192'
+#         failover_group: 'Default'   
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         home_node:  'PZDCNLSHRC03A'
+#         home_port:  'e0b'                
+#     ontap_ls_volume:                           #LS Mirror Vols
+#       - name: 'PZDCNLSVMDES01_root_M01'
+#         hostname: 'PZDCNLSHRC03'
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         aggregate_name: 'PZDCNLSHRC03A_VMDK_01'
+#         size:   '1024'
+#       - name: 'PZDCNLSVMDES01_root_M02'
+#         hostname: 'PZDCNLSHRC03'
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         aggregate_name: 'PZDCNLSHRC03B_VMDK_01'
+#         size:   '1024'
+#     ontap_snapmirror:                   
+#       - hostname: 'PZDCNLSHRC03'                #Create First LS Mirror
+#         source_volume:  'PZDCNLSVMDES01_root'
+#         destination_volume: 'PZDCNLSVMDES01_root_M01'
+#         source_vserver: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         destination_vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         schedule: 'hourly'
+#         relationship_type:  'load_sharing'
+#       - hostname: 'PZDCNLSHRC03'                 #Create Second LS Mirror
+#         source_volume:  'PZDCNLSVMDES01_root'
+#         destination_volume: 'PZDCNLSVMDES01_root_M02'
+#         source_vserver: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         destination_vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         schedule: 'hourly'
+#         relationship_type:  'load_sharing'
+#     ontap_export_policy:
+#       - name: 'NFS_RO'
+#         hostname: 'PZDCNLSHRC03'
+#         vserver: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#     ontap_export_policy_rule:
+#       - name: 'NFS_RO'
+#         hostname: 'PZDCNLSHRC03'
+#         vserver: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         super_user_security: 'any'
+#         client_match: '0.0.0.0/0'
+#     ontap_volume_policy:
+#       - name: 'PZDCNLSVMDES01_root'
+#         hostname: 'PZDCNLSHRC03'
+#         vserver:  'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         policy: 'NFS_RO'
+#     snap_init_destination:
+#       - hostname: 'PZDCNLSHRC03'
+#         destination_vserver: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         destination_volume: 'PZDCNLSVMDES01_root_M02'
+#     ls_mirror_update:
+#       - hostname: 'PZDCNLSHRC03'
+#         source_vserver: 'PZDCNLSVMDES01.hcaqol.corpqol.net'
+#         source_volume: 'PZDCNLSVMDES01_root'

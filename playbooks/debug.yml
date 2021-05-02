@@ -1,0 +1,12 @@
+---
+
+# - name:          'Entry point for Cluster Provisioning'
+#   hosts:         all
+#   gather_facts:  no 
+#   tasks:
+#     - include_role:
+#         name: "active_directory/active_directory"
+
+- include: post_task.yml
+
+     

@@ -1,0 +1,9 @@
+---
+
+#######
+# VARS for INODE and VOLUME EXPANSION
+#######
+
+#pct_thresh: 60
+inode_pct_target: 10
+volume_pct_target: 1.42678765

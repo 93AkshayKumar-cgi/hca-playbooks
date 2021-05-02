@@ -1,0 +1,69 @@
+---
+
+-  set_fact:
+      service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+-  name: "Test of Block construct"
+   block:
+     
+      -  name: "execute volume provision"
+
+         na_ontap_cifs_server:
+            hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+            
+            https:            true
+            validate_certs:   false
+            vserver:                   "{{ loop_arg['vserver'] }}"
+            http_port:                 "{{ loop_arg['http_port']                  | default('443') }}"
+
+            admin_password:            "{{ loop_arg['admin_password']             | default(omit) }}"
+            admin_user_name:           "{{ loop_arg['admin_user_name']            | default(omit) }}"
+            domain:                    "{{ loop_arg['domain']                     | default(omit) }}"
+            force:                     "{{ loop_arg['force']                      | default(omit) }}"
+            name:                      "{{ loop_arg['name']                      | default(omit) }}"
+            #cifs_server_name:          "{{ loop_arg['cifs_server_name']           | default(omit) }}"
+            ontapi:                    "{{ loop_arg['ontapi']                     | default(omit) }}"
+            ou:                        "{{ loop_arg['ou']                         | default(omit) }}"
+            service_state:             "{{ loop_arg['service_state']              | default(omit) }}"
+            state:                     "{{ loop_arg['state']                      | default(omit) }}"
+            use_rest:                  "{{ loop_arg['use_rest']                   | default(omit) }}"
+            workgroup:                 "{{ loop_arg['workgroup']                  | default(omit) }}"
+
+
+         loop:    "{{ args }}"
+         loop_control:
+            loop_var:   loop_arg
+         register:      role_result
+
+   rescue:
+      -  name: 'Global playbook logging'
+         include_role: 
+            name: "log/global_logr"       
+         vars:
+            role_log:
+               role: "ONTAP_CIFS_SERVER"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "failed"
+               result: "{{role_result}}"  
+            global_log:  "{{ global_log_msgs + [ role_log ] }}"
+          
+
+      -  name: "STop the Play"
+         meta: end_play      
+
+-  name: add log msg
+   vars:
+      role_log:
+         role: "ONTAP_CIFS_SERVER"
+         timestamp:
+            start_time: "{{service_start_time}}"
+            end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+         service_status: "success"
+         result: "{{role_result.results}}"
+      
+   set_fact:
+      global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"

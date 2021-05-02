@@ -1,0 +1,107 @@
+---
+
+#--------------------------------------------------------------------
+# Each service provisioned must have an entry in the 'services'
+# dictionary.  The service name is the key under 'services'
+# and will be used to determine the name of various roles to
+# be provisioned (e.g. aggrs). The service name must be provided in every
+# request sent to Tower
+#--------------------------------------------------------------------
+
+# serviceNow:
+#   correlation_id:          ""
+#   sys_id:                  ""
+#   # url:                   ""
+#   url:                     "http://127.0.0.1:8000/" 
+#   content_type:            "application/json"
+#   accept:                  "application/json"
+#   access_token:            ""
+#   cancellation_reason:     ""
+
+# cyberark:
+#   sdklocation: ''
+#   appid: 
+#   username: 
+#   query:
+#     safe: "E
+#     folder: ""
+#     object: ""
+    
+#logging:
+#  logger_name: log2file
+#  logger_details:
+#    log_level: 2
+#    output_file:  "/tmp/123ABC.out"
+#
+#update_system:
+#  updateto: servicenow
+#
+#
+#pre_task:
+#  # microservices:
+#  #   - name: cyberark
+#  #     args: cyberark
+#  #     role: cyberark/cyberark_auth
+#
+#post_task:
+#  microservices:
+#    - name: logging
+#      args: logging
+#      role: log/{{logging['logger_name']}} 
+#    - name: update_system
+#      args: "{{update_system['updateto']}}"
+#      role: update_system/{{update_system['updateto']}}
+#
+#services:
+#  nas_nfs: 
+#    create:
+#      microservices:
+#        - name: ontap_export_policy
+#          args: ontap_export_policy
+#          role: na/ontap_export_policy
+#        - name: ontap_volume
+#          args: ontap_volume
+#          role: na/ontap_volume
+#        # - name: ontap_qtree
+#        #   args: ontap_qtree
+#        #   role: na/ontap_qtree
+#        # - name: ontap_quotas
+#        #   args: ontap_quotas
+#        #   role: na/ontap_quotas
+#        # - name: ontap_export_policy_rule
+#        #   args: ontap_export_policy_rule
+#        #   role: na/ontap_export_policy_rule
+#        # - name: active_directory
+#        #   args: active_directory
+#        #   role: active_directory/active_directory
+#
+#    read:
+#      microservices:
+#        - name: ontap_volume
+#          args: ontap_volume
+#          role: na/ontap_volume
+#        - name: ontap_qtree
+#          args: ontap_qtree
+#          role: na/ontap_qtree
+#    update:
+#      microservices:
+#        - name: ontap_quotas
+#          args: ontap_quotas
+#          role: na/ontap_quotas
+#          
+#    delete:
+#      microservices:
+#        name: ontap_volume
+#        args: ontap_volume
+#        role: na/ontap_volume
+  
+
+          
+
+ 
+
+
+
+
+    
+

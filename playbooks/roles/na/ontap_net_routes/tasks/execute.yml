@@ -1,0 +1,61 @@
+---
+
+-  set_fact:
+      service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+-  name: "BLOCKnRESCUE: ONTAP_NET_ROUTES"
+   block:
+
+      -  name: 'EXECUTE ONTAP_NET_ROUTES'
+         na_ontap_net_routes:
+            hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+            https:            true
+            validate_certs:   false
+            http_port:                 "{{ loop_arg['http_port']            | default('443') }}"
+            state:                     "{{ loop_arg['state']                | default('present') }}"
+            vserver:                   "{{ loop_arg['vserver'] }}"
+
+            destination:               "{{ loop_arg['destination']           | default(omit) }}"
+            from_destination:          "{{ loop_arg['from_destination']      | default(omit) }}"
+            from_gateway:              "{{ loop_arg['from_gateway']          | default(omit) }}" 
+            from_metric:               "{{ loop_arg['from_metric']           | default(omit) }}"
+            gateway:                   "{{ loop_arg['gateway']               | default(omit) }}"
+            metric:                    "{{ loop_arg['metric']                | default(omit) }}" 
+            ontapi:                    "{{ loop_arg['ontapi']                | default(omit) }}"
+
+         loop: "{{ args }}"
+         loop_control:
+            loop_var:      loop_arg
+         register:   role_result
+
+   rescue:
+      -  name: 'Global playbook logging'
+         include_role: 
+            name: "log/global_logr"       
+         vars:
+            role_log:
+               role: "ONTAP_NET_ROUTES"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "failed"
+               result: "{{role_result}}"   
+            global_log:  "{{ global_log_msgs + [ role_log ] }}"
+
+      -  name: "STop the Play"
+         meta: end_play      
+        
+-  name: add log msg
+   vars:
+      role_log:
+         role: "ONTAP_NET_ROUTES"
+         timestamp:
+            start_time: "{{service_start_time}}"
+            end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+         service_status: "success"
+         result: "{{role_result}}"   
+   set_fact:
+      global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"

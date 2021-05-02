@@ -1,0 +1,14 @@
+#[na]
+#HWVABCNASMDEV001
+#ansiblehost
+#localhost
+
+#[delegatedhosts]
+#centos7-2 ansible_host=172.16.132.71
+
+#[na:vars]
+#ansible_user=root
+#ansible_host=10.0.0.57
+#ansible_python_interpreter=/usr/bin/python3
+localhost ansible_host=localhost ansible_connection=local
+#Cluster01 ansible_host=localhost ansible_connection=local

@@ -1,0 +1,4 @@
+ansible-playbook site.yml -i inventory -e '{"raw_service_request":['service":"volume_resize","operation":"create","std_name":"volume_resize"] req_details=volume_resize hostname=XRDCNLSHRC02 vserver=PZDCNLSVMSRC01.hcaqol.corpqol.net volume=V_Ansible_Test size=1GB" -vvvv
+
+
+{ "raw_service_request": {"service": "volume_resize","operation": "create", "std_name": "volume_resize","req_details": {"volume_resize": [{"hostname": "XRDCNLSHRC02","vserver": "PZDCNLSVMSRC01.hcaqol.corpqol.net","volume": "V_Ansible_Test","size": "1GB"}]}}}

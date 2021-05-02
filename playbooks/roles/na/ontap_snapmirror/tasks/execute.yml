@@ -1,0 +1,72 @@
+---
+
+-  set_fact:
+      service_start_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+
+-  name: "BLOCKnRESCUE: ONTAP_SNAPMIRROR"
+   block:
+
+
+      -  name: 'Configure SNAPMIRROR'
+      
+         na_ontap_snapmirror:
+            hostname:         "{{ clusters[loop_arg['hostname']]['mgmt_ip'] }}"
+            username:         "{{ clusters[loop_arg['hostname']]['username'] }}"
+            password:         "{{ clusters[loop_arg['hostname']]['password'] }}"
+
+            https:            true
+            validate_certs:   false
+            http_port:               "{{ loop_arg['http_port']            | default(omit) }}"
+            state:                   "{{ loop_arg['state']                | default('present') }}"
+
+            source_vserver:         "{{ loop_arg['source_vserver']            | default(omit) }}"
+            source_volume:          "{{ loop_arg['source_volume']             | default(omit) }}"
+            source_username:        "{{ loop_arg['source_username']           | default(omit) }}"
+            source_path:            "{{ loop_arg['source_path']               | default(omit) }}"
+            source_password:        "{{ loop_arg['source_password']           | default(omit) }}"
+            source_hostname:        "{{ loop_arg['source_hostname']           | default(omit) }}"
+            schedule:               "{{ loop_arg['schedule']                  | default(omit) }}"
+            relationship_type:      "{{ loop_arg['relationship_type']         | default(omit) }}"
+            policy:                 "{{ loop_arg['policy']                    | default(omit) }}"
+            ontapi:                 "{{ loop_arg['ontapi']                    | default(omit) }}"
+            max_transfer_rate:      "{{ loop_arg['max_transfer_rate']         | default(omit) }}"
+            identity_preserve:      "{{ loop_arg['identity_preserve']         | default(omit) }}"
+            destination_vserver:    "{{ loop_arg['destination_vserver']       | default(omit) }}"
+            destination_volume:     "{{ loop_arg['destination_volume']        | default(omit) }}"
+            destination_path:       "{{ loop_arg['destination_path']          | default(omit) }}"
+            connection_type:        "{{ loop_arg['connection_type']           | default(omit) }}"
+
+
+         loop:    "{{ args }}"
+         loop_control:
+            loop_var:      loop_arg
+         register:   role_result
+
+   rescue:
+      -  name: 'Global playbook logging'
+         include_role: 
+            name: "log/global_logr"       
+         vars:
+            role_log:
+               role: "ONTAP_SNAPMIRROR"
+               timestamp:
+                  start_time: "{{service_start_time}}"
+                  end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+               service_status: "failed"
+               result: "{{role_result}}"   
+            global_log:  "{{ global_log_msgs + [ role_log ] }}"
+
+      -  name: "STop the Play"
+         meta: end_play      
+        
+-  name: add log msg
+   vars:
+      role_log:
+         role: "ONTAP_SNAPMIRROR"
+         timestamp:
+            start_time: "{{service_start_time}}"
+            end_time: "{{ lookup('pipe', 'date +%Y-%m-%d@%H:%M:%S') }}"
+         service_status: "success"
+         result: "{{role_result}}"   
+   set_fact:
+      global_log_msgs:   "{{ global_log_msgs + [ role_log ] }}"
