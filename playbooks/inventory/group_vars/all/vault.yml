@@ -20,7 +20,7 @@ vault:
     #   password:      'Netapp1!'
     XRDCNLSHRC02:
       username:      'admin'
-      password:      'netapp123'
+      password:      ''
     PZDCNLSHRC03:
       username:      'admin'
       password:      'netapp123'
